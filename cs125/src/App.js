@@ -1,18 +1,28 @@
 import './App.css';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+//import Home from "./pages/Home";
+import PersonalInfo from "./pages/PersonalInfo";
+//import Search from "./pages/Search";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <nav className="navbar">
-          <ul>
-            <li><a href="home.js">Home</a></li>
-            <li><a href="user.js">Personal Info</a></li>
-            <li><a href="search.js">Search</a></li>
-          </ul>
-        </nav>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <header className="App-header">
+          <nav className="navbar">
+            <ul>
+              <li><Link to='/home'>Home</Link></li>
+              <li><Link to='/personal'>Personal Info</Link></li>
+              <li><Link to='/search'>Search</Link></li>
+            </ul>
+          </nav>
+        </header>
+
+        <Routes>
+          <Route path="/personal" element={<PersonalInfo/>}/>
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
