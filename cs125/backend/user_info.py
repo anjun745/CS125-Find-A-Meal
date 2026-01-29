@@ -18,6 +18,7 @@ def save_info():
     stored_info["weight"] = data.get("weight")
     stored_info["age"] = data.get("age")
     stored_info["gender"] = data.get("gender")
+    stored_info["fitness"] = data.get("fitness")
     return jsonify({"status": "saved", "data": stored_info})
 
 if __name__ == "__main__":

@@ -10,7 +10,12 @@ export default function PersonalInfo(){
         {value: 0, label: 'Female'},
         {value:  1, label: 'Male'}
     ];
-
+    const[fitness, setFitness] = useState("");
+    const fitness_goals = [
+        {value: 0, label: 'Weight Loss'},
+        {value: 1, label: 'Maintain Current Weight'},
+        {value: 2, label: 'Weight Gain'}
+    ]
     useEffect(() => {
         fetch("http://localhost:5000/api/info")
         .then((res) => res.json())
@@ -22,18 +27,19 @@ export default function PersonalInfo(){
         const res = await fetch("http://localhost:5000/api/info", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({gender,
+        body: JSON.stringify({gender, fitness,
                                 height: height === "" ? null : parseInt(height),
                                 weight: weight === "" ? null : parseInt(weight),
                                 age: age === "" ? null : parseInt(age)}),
         });
         const data = await res.json();
-        setServerValue(data.data); //expects {height, weight, age, gender }
+        setServerValue(data.data); //sends body to server on localhost:5000/api/info
     }
 
     return(
         <div className="user-container">
             <h2>Personal Info</h2>
+            <p>Pick your Gender</p>
             <div>
                 {genders.map((g) => (
                     <label key={g.value}>
@@ -48,6 +54,7 @@ export default function PersonalInfo(){
                     </label>
                 ))}
             </div>
+            <p> Submitting your height, weight, and age will result in most accurate recommendations</p>
             <input
                 placeholder="Enter Height (cm)"
                 value={height}
@@ -65,6 +72,21 @@ export default function PersonalInfo(){
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
             />
+            <p>Pick your Weight Goal</p>
+            <div>
+                {fitness_goals.map((f) => (
+                    <label key={f.value}>
+                    <input
+                        type="radio"
+                        name="fitness"
+                        value={f.value}
+                        checked={fitness === f.value}
+                        onChange={() => setFitness(f.value)}
+                    />
+                    {f.label}
+                    </label>
+                ))}
+            </div>
             
             <button onClick={saveAll} style={{ marginLeft: 8 }}>
                 Save
