@@ -1,17 +1,19 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
+userinfo_bp = Blueprint("userinfo", __name__) #used in app.py to run multiple backend files
+
 # in-memory storage (resets when server restarts)
 stored_info = {}
 
-@app.get("/api/info")
+@userinfo_bp.get("/api/info")
 def get_info():
     return jsonify(stored_info)
 
-@app.post("/api/info")
+@userinfo_bp.post("/api/info")
 def save_info():
     data = request.get_json()
     stored_info["height"] = data.get("height")
@@ -19,7 +21,5 @@ def save_info():
     stored_info["age"] = data.get("age")
     stored_info["gender"] = data.get("gender")
     stored_info["fitness"] = data.get("fitness")
+    stored_info["activity"] = data.get("activity")
     return jsonify({"status": "saved", "data": stored_info})
-
-if __name__ == "__main__":
-    app.run(debug=True)

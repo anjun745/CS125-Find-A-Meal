@@ -4,7 +4,7 @@ export default function PersonalInfo(){
     const [height, setHeight] = useState("");
     const[weight, setWeight] = useState("");
     const[age, setAge] = useState("");
-    const [serverValue, setServerValue] = useState({ height: "", weight: "", age: "", gender: ""});
+    const [serverValue, setServerValue] = useState(""); //to verify what is saved
     const[gender, setGender] = useState("");
     const genders = [
         {value: 0, label: 'Female'},
@@ -16,18 +16,21 @@ export default function PersonalInfo(){
         {value: 1, label: 'Maintain Current Weight'},
         {value: 2, label: 'Weight Gain'}
     ]
-    useEffect(() => {
-        fetch("http://localhost:5000/api/info")
-        .then((res) => res.json())
-        
-    .catch(() => setServerValue("(failed to load)"));
-    }, []);
+    const[activity, setActivity] = useState("");
+    const activity_level = [
+        {value: 1.2, label: 'Sedentary (little/no exercise)'},
+        {value: 1.375, label: 'Lightly active (light exercise 1–3 days/week)'},
+        {value: 1.55, label: 'Moderately active (moderate exercise 3–5 days/week)'},
+        {value: 1.725, label: 'Very active (hard exercise 6–7 days/week)'},
+        {value: 1.9, label: 'Extremely active (very hard training / job)'}
+    ]
+    
 
     async function saveAll(){
         const res = await fetch("http://localhost:5000/api/info", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({gender, fitness,
+        body: JSON.stringify({gender, fitness, activity,
                                 height: height === "" ? null : parseInt(height),
                                 weight: weight === "" ? null : parseInt(weight),
                                 age: age === "" ? null : parseInt(age)}),
@@ -72,6 +75,25 @@ export default function PersonalInfo(){
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
             />
+
+            <p>Choose your Activity Level</p>
+            <div>
+                {activity_level.map((a) => (
+                    <div key={a.value}>
+                        <label key={a.value}>
+                        <input
+                            type="radio"
+                            name="activity"
+                            value={a.value}
+                            checked={activity === a.value}
+                            onChange={() => setActivity(a.value)}
+                        />
+                        {a.label}
+                        </label>
+                    </div>
+                ))}
+            </div>
+
             <p>Pick your Weight Goal</p>
             <div>
                 {fitness_goals.map((f) => (
