@@ -1,0 +1,3 @@
+
+Because we are working with APIs start every session with a virtual environment
+python -m venv .venv
