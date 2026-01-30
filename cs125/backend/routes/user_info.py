@@ -22,4 +22,5 @@ def save_info():
     stored_info["gender"] = data.get("gender")
     stored_info["fitness"] = data.get("fitness")
     stored_info["activity"] = data.get("activity")
+    stored_info["macros"] = data.get("macros")
     return jsonify({"status": "saved", "data": stored_info})
