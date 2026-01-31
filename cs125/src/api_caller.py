@@ -1,25 +1,34 @@
 from flask import Flask,jsonify
 import requests
-import json
 
 #alvins api key: 6d081c60d7aa4cd8b2ad2e3c810ef703
-API_KEY = "".strip() #use ur own when you can
+API_KEY = "6d081c60d7aa4cd8b2ad2e3c810ef703".strip() #use ur own when you can
 API_URL = "https://api.spoonacular.com/recipes/complexSearch"
 app = Flask(__name__)
 
-def get_info():
-    headers = {"Authorization": f"Bearer {API_KEY}"}
+def get_info(ingredientList = None):
+    if ingredientList is None:
+        ingredientList = [] #i just dont like having default mutable arguments
+        
 
-    response = requests.get(API_URL,headers)
 
-    if response == 200:#if the request didnt fail
+    params = {
+        "apiKey": API_KEY,
+        "includeIngredients": ",".join(ingredientList), #list of ingredients to be included
+        "number": 5 #limits results we get to 5
+    }
+
+    response = requests.get(API_URL,params)
+
+    if response.status_code == 200:#if the request didnt fail
         return jsonify(response.json())
     else:
         return jsonify({"error": "API call failed", "status": response.status_code})
 
 @app.route("/")   # this handles GET requests to "/"
 def home():
-    return get_info()
+    ingredientList = ["chicken","tomato"]
+    return get_info(ingredientList)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+    app.run(host="0.0.0.0", port=5000)
