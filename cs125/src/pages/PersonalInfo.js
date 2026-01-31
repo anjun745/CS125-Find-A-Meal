@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState} from "react";
 
 export default function PersonalInfo(){
     const [height, setHeight] = useState("");
@@ -35,7 +35,7 @@ export default function PersonalInfo(){
     const { protein, carbs, fat, fiber, sugarLimit, allergies } = macros;
 
     async function saveAll(){
-        const res = await fetch("http://localhost:5000/api/info", {
+        const res = await fetch("http://127.0.0.1:5000/api/info", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({gender, fitness, activity, 
@@ -75,6 +75,7 @@ export default function PersonalInfo(){
             </div>
             <p> Submitting your height, weight, and age will result in most accurate recommendations</p>
             <input
+                required
                 placeholder="Enter Height (cm)"
                 value={height}
                 type="number"
