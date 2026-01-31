@@ -15,7 +15,9 @@ def get_info(ingredientList = None):
     params = {
         "apiKey": API_KEY,
         "includeIngredients": ",".join(ingredientList), #list of ingredients to be included
-        "number": 5 #limits results we get to 5
+        "number": 5, #limits results we get to 5
+        "addRecipeInformation" : True #gives us the recipe descriptions
+
     }
 
     response = requests.get(API_URL,params)
