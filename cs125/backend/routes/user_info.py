@@ -47,5 +47,3 @@ def save_info():
     except:
         print("Enter required info to get recommended calories.")
     return jsonify({"status": "saved", "data": stored_info})
-
-

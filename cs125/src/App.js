@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 //import Home from "./pages/Home";
 import PersonalInfo from "./pages/PersonalInfo";
-//import Search from "./pages/Search";
+import Search from "./pages/Search";
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
 
         <Routes>
           <Route path="/personal" element={<PersonalInfo/>}/>
+          <Route path="/search" element={<Search/>}/>
         </Routes>
       </div>
     </Router>
