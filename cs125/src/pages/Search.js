@@ -21,6 +21,12 @@ export default function Search(){
     }
 
     return(
+        <form
+            onSubmit={(e) => {
+                e.preventDefault();
+                search();
+            }}
+        >
         <div className="search-container">
             <h2>Search</h2>
             <p>Enter ingredients, with commas separating each ingredient</p>
@@ -28,6 +34,7 @@ export default function Search(){
                 type="text"
                 placeholder="Search by ingredients..."
                 value={query}
+                required
                 onChange={(e) => setQuery(e.target.value)}
             />
             <form id="filter-search">
@@ -49,8 +56,9 @@ export default function Search(){
                     Macro Restrictions
                 </label>
             </form>
-            <button onClick={search}>Search</button>
+            <button type="submit">Search</button>
             <p>Server Response: {JSON.stringify(serverValue, null, 2)}</p>
         </div>
+        </form>
     );
 }

@@ -57,11 +57,11 @@ export default function PersonalInfo(){
 
     return(
         <form
-  onSubmit={(e) => {
-    e.preventDefault(); // stop page reload
-    saveAll();          // only runs if form is valid
-  }}
->
+            onSubmit={(e) => {
+                e.preventDefault();
+                saveAll();
+            }}
+        >
         <div className="user-container">
             <h2>Personal Info</h2>
             <p>Pick your Gender</p>
