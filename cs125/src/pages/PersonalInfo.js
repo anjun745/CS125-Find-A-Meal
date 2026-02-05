@@ -56,6 +56,12 @@ export default function PersonalInfo(){
     }
 
     return(
+        <form
+  onSubmit={(e) => {
+    e.preventDefault(); // stop page reload
+    saveAll();          // only runs if form is valid
+  }}
+>
         <div className="user-container">
             <h2>Personal Info</h2>
             <p>Pick your Gender</p>
@@ -66,6 +72,7 @@ export default function PersonalInfo(){
                         type="radio"
                         name="gender"
                         value={g.value}
+                        required
                         checked={gender === g.value}
                         onChange={() => setGender(g.value)}
                     />
@@ -83,6 +90,7 @@ export default function PersonalInfo(){
             />
 
             <input
+                required
                 placeholder="Enter Weight (lbs)"
                 value={weight}
                 type="number"
@@ -90,6 +98,7 @@ export default function PersonalInfo(){
             />
 
             <input
+                required
                 placeholder="Enter Age"
                 value={age}
                 type="number"
@@ -105,6 +114,7 @@ export default function PersonalInfo(){
                             type="radio"
                             name="activity"
                             value={a.value}
+                            required
                             checked={activity === a.value}
                             onChange={() => setActivity(a.value)}
                         />
@@ -122,6 +132,7 @@ export default function PersonalInfo(){
                         type="radio"
                         name="fitness"
                         value={f.value}
+                        required
                         checked={fitness === f.value}
                         onChange={() => setFitness(f.value)}
                     />
@@ -191,11 +202,12 @@ export default function PersonalInfo(){
             </label>
             </div>
             
-            <button onClick={saveAll} style={{ marginLeft: 8 }}>
+            <button type="submit" style={{ marginLeft: 8 }}>
                 Save
             </button>
 
             <p>Saved on server: {JSON.stringify(serverValue, null, 2)}</p>
         </div>
+        </form>
     );
 }
