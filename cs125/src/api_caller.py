@@ -12,11 +12,11 @@ def get_info(ingredientList = None,calories = None,protein = None):
         "apiKey": API_KEY,
         "number": 5, #limits results we get to 5
         "addRecipeInformation" : True, #gives us the recipe descriptions
-        "addRecipeNutrition" : True
+        "addRecipeNutrition" : False
 
     }
     if ingredientList: #if they dont care about ingredients dont add it to the search query
-        params["includeIngredients"] = ",".join(ingredientList), 
+        params["includeIngredients"] = ",".join(ingredientList)
     
     minmax_map = {
         "calories" : ("minCalories","maxCalories"),
@@ -31,7 +31,7 @@ def get_info(ingredientList = None,calories = None,protein = None):
             if value[0]:
                 params[min] = value[0]
             if value[1]:
-                params[max] = [max]
+                params[max] = value[1]
         
 
     response = requests.get(API_URL,params)
