@@ -37,7 +37,7 @@ def get_info(ingredientList = None,calories = None,protein = None):
     response = requests.get(API_URL,params)
 
     if response.status_code == 200:#if the request didnt fail
-        return jsonify(response.json())
+        return response.json()
     else:
         return jsonify({"error": "API call failed", "status": response.status_code})
 

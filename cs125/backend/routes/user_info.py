@@ -1,9 +1,6 @@
 from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
-
 userinfo_bp = Blueprint("userinfo", __name__) #used in app.py to run multiple backend files
 
 # in-memory storage (resets when server restarts)
