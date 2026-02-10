@@ -10,9 +10,9 @@ def get_info(ingredientList = None,calories = None,protein = None):
 
     params = {
         "apiKey": API_KEY,
-        "number": 5, #limits results we get to 5
+        "number": 1, #limits results we get to 5
         "addRecipeInformation" : True, #gives us the recipe descriptions
-        "addRecipeNutrition" : False
+        "addRecipeNutrition" : True
 
     }
     if ingredientList: #if they dont care about ingredients dont add it to the search query
@@ -36,10 +36,9 @@ def get_info(ingredientList = None,calories = None,protein = None):
 
     response = requests.get(API_URL,params)
 
-    if response.status_code == 200:#if the request didnt fail
-        return response.json()
-    else:
+    if response.status_code != 200:#if the request didnt fail
         return jsonify({"error": "API call failed", "status": response.status_code})
+    return response.json()    
 
 @app.route("/")   # this handles GET requests to "/"
 def home():

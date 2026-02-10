@@ -7,7 +7,7 @@ MEAL_WEIGHTS = {
 }
 
 leah_api = "41b38bcafc974c06937752cda574f500"
-API_KEY = ""#leah_api
+API_KEY = "6d081c60d7aa4cd8b2ad2e3c810ef703"#leah_api
 API_URL = "https://api.spoonacular.com/recipes/complexSearch"
 
 def meal_calorie_range(daily_calories: int, meal: str, tolerance=0.1):
