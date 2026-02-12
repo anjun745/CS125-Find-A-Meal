@@ -1,13 +1,12 @@
 import sqlite3
 import requests
 
-API_KEY = "6d081c60d7aa4cd8b2ad2e3c810ef703"
-API_URL = "https://api.spoonacular.com/recipes/complexSearch"
-
 MEAL_TYPES = ["breakfast", "lunch", "dinner"]
 RECIPES_PER_MEAL = 50
 
-API_KEY = "6d081c60d7aa4cd8b2ad2e3c810ef703".strip() #use ur own when you can
+leah_key = "41b38bcafc974c06937752cda574f500"
+alvin_key = "6d081c60d7aa4cd8b2ad2e3c810ef703"
+API_KEY = leah_key.strip() #use ur own when you can
 API_URL = "https://api.spoonacular.com/recipes/complexSearch"
 
 
