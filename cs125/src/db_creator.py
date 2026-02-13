@@ -1,7 +1,7 @@
 import sqlite3
 import requests
 
-MEAL_TYPES = ["vegan"]
+MEAL_TYPES = ["vegetarian","vegan","pescatarian"]
 RECIPES_PER_MEAL = 50
 
 leah_key = "41b38bcafc974c06937752cda574f500"
@@ -46,6 +46,8 @@ def add_to_table(meal_type,conn):
         "number": 50, #limits results we get to 5
         "addRecipeInformation" : True, #gives us the recipe descriptions
         "addRecipeNutrition" : True,
+        "offset": 50          
+  
     }
     response = requests.get(API_URL,params)
     if response.status_code != 200:#if the request didnt fail
