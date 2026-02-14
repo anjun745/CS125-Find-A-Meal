@@ -19,6 +19,9 @@ def create_table(conn):
         id INTEGER PRIMARY KEY,
         title TEXT,
         summary TEXT,
+        instructions TEXT,
+        ingredients TEXT,
+        intolerances TEXT,
         calories INT,
         protein INT,
         fat INT,
@@ -46,7 +49,8 @@ def add_to_table(meal_type,conn):
         "number": 50, #limits results we get to 5
         "addRecipeInformation" : True, #gives us the recipe descriptions
         "addRecipeNutrition" : True,
-        "offset": 50          
+        "offset": 0,
+        "instructionsRequired": True,
   
     }
     response = requests.get(API_URL,params)
@@ -69,11 +73,20 @@ def add_to_table(meal_type,conn):
         nut_dict = {n.get("name"): n.get("amount") for n in nutrients_list}
         # the question marks are used so i can insert variables
         #or ignore is to account for duplicate recipes
+        # ingredients
+        ingredients = r.get("extendedIngredients", [])
+        ingredient_names = [i["name"] for i in ingredients]
+
+        # intolerances (if available)
+        intolerances = r.get("intolerances", [])
         cursor.execute("""
             INSERT OR IGNORE INTO recipes ( 
                 id,
                 title,
                 summary,
+                instructions,
+                ingredients,
+                intolerances,
                 calories,
                 protein,
                 fat,
@@ -88,11 +101,14 @@ def add_to_table(meal_type,conn):
                 like_count,
                 spoonacular_score,
                 meal_type)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, (
             r.get("id"),
             r.get("title"),
             r.get("summary", ""),
+            r.get("instructions", ""),
+            ",".join(ingredient_names),
+            ",".join(intolerances) if intolerances else None,
 
             nut_dict.get("Calories"),
             nut_dict.get("Protein"),
@@ -115,8 +131,6 @@ def add_to_table(meal_type,conn):
     
     conn.commit()
     print(f"{meal_type}: inserted {inserted} new recipes (total tried: {len(recipes)})")
-
-
 
 
 
