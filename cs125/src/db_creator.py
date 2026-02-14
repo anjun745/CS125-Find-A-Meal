@@ -1,12 +1,13 @@
 import sqlite3
 import requests
 
-MEAL_TYPES = ["vegetarian","vegan","pescatarian"]
-RECIPES_PER_MEAL = 50
+MEAL_TYPES = ["main course"]
 
+kei_key = "402cf8980ef54e318fba1bd772fd3dde"
 leah_key = "41b38bcafc974c06937752cda574f500"
 alvin_key = "6d081c60d7aa4cd8b2ad2e3c810ef703"
-API_KEY = alvin_key.strip() #use ur own when you can
+alvin_key2 = "5e1b1107f24d4d1cbc92bb5e681813ab"
+API_KEY = alvin_key2.strip() #use ur own when you can
 API_URL = "https://api.spoonacular.com/recipes/complexSearch"
 
 
@@ -21,7 +22,6 @@ def create_table(conn):
         summary TEXT,
         instructions TEXT,
         ingredients TEXT,
-        intolerances TEXT,
         calories INT,
         protein INT,
         fat INT,
@@ -73,12 +73,25 @@ def add_to_table(meal_type,conn):
         nut_dict = {n.get("name"): n.get("amount") for n in nutrients_list}
         # the question marks are used so i can insert variables
         #or ignore is to account for duplicate recipes
-        # ingredients
-        ingredients = r.get("extendedIngredients", [])
-        ingredient_names = [i["name"] for i in ingredients]
+        #ingredients
+        ingredients_set = set()  # avoid duplicates
+        for instr in r.get("analyzedInstructions", []):
+            for step in instr.get("steps", []):
+                for ing in step.get("ingredients", []):
+                    name = ing.get("name")
+                    if name:
+                        ingredients_set.add(name.strip())
 
-        # intolerances (if available)
-        intolerances = r.get("intolerances", [])
+        ingredients_text = ", ".join(sorted(ingredients_set)) if ingredients_set else None
+        #instructions
+        instructions_parts = []
+        for section in r.get("analyzedInstructions", []):
+            for step in section.get("steps", []):
+                step_text = step.get("step", "").strip()
+                if step_text:
+                    instructions_parts.append(step_text)
+
+        instructions_text = "\n".join(instructions_parts) if instructions_parts else None
         cursor.execute("""
             INSERT OR IGNORE INTO recipes ( 
                 id,
@@ -86,7 +99,6 @@ def add_to_table(meal_type,conn):
                 summary,
                 instructions,
                 ingredients,
-                intolerances,
                 calories,
                 protein,
                 fat,
@@ -101,14 +113,13 @@ def add_to_table(meal_type,conn):
                 like_count,
                 spoonacular_score,
                 meal_type)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, (
             r.get("id"),
             r.get("title"),
             r.get("summary", ""),
-            r.get("instructions", ""),
-            ",".join(ingredient_names),
-            ",".join(intolerances) if intolerances else None,
+            instructions_text,
+            ingredients_text,
 
             nut_dict.get("Calories"),
             nut_dict.get("Protein"),
