@@ -1,6 +1,7 @@
 import sqlite3
 import requests
 
+#MEAL_TYPES = ["breakfast","main course","vegetarian","vegan","pescatarian"]
 MEAL_TYPES = ["main course"]
 
 kei_key = "402cf8980ef54e318fba1bd772fd3dde"
@@ -46,10 +47,10 @@ def add_to_table(meal_type,conn):
     params = {
         "apiKey": API_KEY,
         "query": meal_type,
-        "number": 50, #limits results we get to 5
+        "number": 200, #limits results we get to 5
         "addRecipeInformation" : True, #gives us the recipe descriptions
         "addRecipeNutrition" : True,
-        "offset": 0,
+        "offset": 650,
         "instructionsRequired": True,
   
     }
