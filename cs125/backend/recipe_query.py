@@ -37,7 +37,9 @@ def query_simple_or(conn, ingredients_list): #grabs all recipes that include ANY
     results = cursor.fetchall()
     return [row[0] for row in results] #gets us the id without parenthesis or comma
 
+
 if __name__ == "__main__":
-    ingredients_list = ["beef"]
     conn = sqlite3.connect("recipes.db")
+    user_query = input("Enter your ingredients seperated by spaces:\n")
+    ingredients_list = user_query.split()
     print(query_simple(conn,ingredients_list))
