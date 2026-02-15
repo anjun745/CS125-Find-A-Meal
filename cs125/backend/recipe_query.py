@@ -3,7 +3,7 @@ import sqlite3
 def query_simple(conn, ingredients_list): #grabs all recipes that include ALL the ingredients
     cursor = conn.cursor()
 
-    query = "SELECT id,like_count FROM recipes WHERE "
+    query = "SELECT id,title,like_count FROM recipes WHERE "
     conditions = []
     params = []
 
@@ -38,6 +38,6 @@ def query_simple_or(conn, ingredients_list): #grabs all recipes that include ANY
     return [row[0] for row in results] #gets us the id without parenthesis or comma
 
 if __name__ == "__main__":
-    ingredients_list = ["chicken", "garlic", "rice"]
+    ingredients_list = ["beef"]
     conn = sqlite3.connect("recipes.db")
     print(query_simple(conn,ingredients_list))
