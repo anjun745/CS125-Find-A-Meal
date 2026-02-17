@@ -1,6 +1,42 @@
 .user-container{
-    display: flex;
-    gap: 24px;
-    padding: 20px;
-    background-color: #371269;
+  max-width: 30%;
+  margin: 3rem auto;
+  padding: 4rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.user-container button{
+  background: #9874C2;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.user-container button:hover{
+  background: #825db3;
+}
+.user-container p{
+  color: #af74e0;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.user-container h2{
+  margin-top: 0rem;
+  font-size: 1.4rem;
+}
+
+.user-container input[type="text"],
+.user-container input[type="number"]{
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #c9acea;
+  font-size: 0.95rem;
 }

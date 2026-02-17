@@ -1,4 +1,5 @@
 import {useState} from "react";
+import "./PersonalInfo.css";
 
 export default function PersonalInfo(){
     const [height, setHeight] = useState("");

@@ -1,14 +1,15 @@
 import {useState} from "react";
+import "./Search.css";
 
 
 export default function Search(){
     const [query, setQuery] = useState("");
-    const [serverValue, setServerValue] = useState("");
     const [caloriesFilter, setCaloriesFilter] = useState(false);
     const [macrosFilter, setMacrosFilter] = useState(false);
+    const [results, setResults] = useState([]);
 
     async function search(){
-        const res = await fetch(`http://127.0.0.1:5000/api/search`,{ //?q=${query}`, {
+        const res = await fetch(`http://127.0.0.1:5000/api/search`,{ 
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({query: query, filters: {
@@ -17,7 +18,8 @@ export default function Search(){
             }})
         });
         const data = await res.json();
-        setServerValue(data.data); //sends body to server on localhost:5000/api/search
+        console.log(data.meals["meal-result"].results);
+        setResults(data.meals["meal-result"].results); 
     }
 
     return(
@@ -37,7 +39,7 @@ export default function Search(){
                 required
                 onChange={(e) => setQuery(e.target.value)}
             />
-            <form id="filter-search">
+            <div id="filter-search">
                 <p>Filter Results By</p>
                 <div>
                     <label>
@@ -55,10 +57,38 @@ export default function Search(){
                     />
                     Macro Restrictions
                 </label>
-            </form>
+            </div>
             <button type="submit">Search</button>
-            <p>Server Response: {JSON.stringify(serverValue, null, 2)}</p>
+        </div>
+                <div className="results">
+            {results.length === 0 && <p>No results </p>}
+            {results.map((recipe) => {
+                const calories = recipe.nutrition?.nutrients?.find((n) => n.name === "Calories")?.amount;
+                return (
+                    <div key={recipe.id} className="recipe-card">
+                        <h3>{recipe.title}</h3>
+
+                        <img
+                            src={recipe.image}
+                            alt={recipe.title}
+                            width="200"
+                        />
+
+                        <p>Calories: {Math.round(calories)} kcal</p>
+                        <p>Ready in {recipe.readyInMinutes} minutes</p>
+
+                        <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">
+                        View Recipe
+                        </a>
+                    </div>
+                );
+            })
+            }
         </div>
         </form>
+
+
+
+
     );
 }
