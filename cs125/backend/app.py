@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
-from routes import userinfo_bp
-from routes import search_bp
+from .routes import userinfo_bp
+from .routes import search_bp
 
 app = Flask(__name__)
 CORS(app)

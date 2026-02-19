@@ -18,8 +18,8 @@ export default function Search(){
             }})
         });
         const data = await res.json();
-        console.log(data.meals["meal-result"].results);
-        setResults(data.meals["meal-result"].results); 
+        console.log(data.meals);
+        setResults(data.meals ?? []);
     }
 
     return(
@@ -60,30 +60,24 @@ export default function Search(){
             </div>
             <button type="submit">Search</button>
         </div>
-                <div className="results">
+        
+        <div className="results">
             {results.length === 0 && <p>No results </p>}
-            {results.map((recipe) => {
-                const calories = recipe.nutrition?.nutrients?.find((n) => n.name === "Calories")?.amount;
-                return (
-                    <div key={recipe.id} className="recipe-card">
-                        <h3>{recipe.title}</h3>
-
-                        <img
-                            src={recipe.image}
-                            alt={recipe.title}
-                            width="200"
-                        />
-
-                        <p>Calories: {Math.round(calories)} kcal</p>
-                        <p>Ready in {recipe.readyInMinutes} minutes</p>
-
-                        <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">
+            {results.map((recipe) => (
+                <div key={recipe.id} className="recipe-card">
+                    <h3>{recipe.title}</h3>
+                    <img
+                        src={recipe.image_url}
+                        alt={recipe.title}
+                        width="200"
+                    />
+                    <p>Calories: {recipe.calories != null ? Math.round(recipe.calories) : "N/A"} kcal</p>
+                    <p>Ready in {recipe.ready_in_minutes ?? "?"} minutes</p>
+                    <a href={recipe.source_url} target="_blank" rel="noreferrer">
                         View Recipe
-                        </a>
-                    </div>
-                );
-            })
-            }
+                    </a>
+                </div>
+                ))}
         </div>
         </form>
 
