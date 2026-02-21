@@ -47,7 +47,7 @@ def add_to_table(meal_type,conn):
     params = {
         "apiKey": API_KEY,
         "query": meal_type,
-        "number": 200, #limits results we get to 5
+        "number": 100, #limits results we get to 5
         "addRecipeInformation" : True, #gives us the recipe descriptions
         "addRecipeNutrition" : True,
         "offset": 650,
