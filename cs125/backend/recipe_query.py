@@ -1,6 +1,6 @@
 import sqlite3
 
-def query_simple(conn, ingredients_list): #grabs all recipes that include ALL the ingredients
+def query_simple(conn, ingredients_list, allergy=None): #grabs all recipes that include ALL the ingredients
     cursor = conn.cursor()
 
     query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url FROM recipes WHERE "
@@ -11,6 +11,12 @@ def query_simple(conn, ingredients_list): #grabs all recipes that include ALL th
         params.append(f"%{ingredient}%")
 
     query += " AND ".join(conditions)
+    if allergy:
+        allergies = allergy if isinstance(allergy, (list, tuple, set)) else [allergy]
+        for a in allergies:
+            query += " AND LOWER(ingredients) NOT LIKE LOWER(?)"
+            params.append(f"%{a}%")
+            
     query += " ORDER BY like_count DESC"
 
     cursor.execute(query, params)
@@ -21,10 +27,10 @@ def query_simple(conn, ingredients_list): #grabs all recipes that include ALL th
     return results
 
 
-def query_simple_or(conn, ingredients_list): #grabs all recipes that include ANY the ingredients
+def query_simple_or(conn, ingredients_list, allergy=None): #grabs all recipes that include ANY the ingredients
     cursor = conn.cursor()
 
-    query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url FROM recipes WHERE "
+    query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url, meal_type FROM recipes WHERE "
     conditions = []
     params = []
 
@@ -33,6 +39,12 @@ def query_simple_or(conn, ingredients_list): #grabs all recipes that include ANY
         params.append(f"%{ingredient}%")
 
     query += " OR ".join(conditions)
+    if allergy:
+        allergies = allergy if isinstance(allergy, (list, tuple, set)) else [allergy]
+        for a in allergies:
+            query += " AND LOWER(ingredients) NOT LIKE LOWER(?)"
+            params.append(f"%{a}%")
+            
     query += " ORDER BY like_count DESC"
 
     cursor.execute(query, params)
@@ -50,11 +62,11 @@ def query_with_extras(conn, ingredients_list,
     min_carbs=None,
     max_carbs=None,
     min_fat=None,
-    max_fat=None, ): #grabs all recipes that include ALL the ingredients
+    max_fat=None, allergy=None): #grabs all recipes that include ALL the ingredients
     cursor = conn.cursor()
-
-    #query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url FROM recipes WHERE "
-    query = "SELECT title,like_count FROM recipes WHERE "
+    print("MIN AND MAX PROTEIN:", min_protein, max_protein)
+    print("MIN AND MAX CALORIES:", min_calories, max_calories)
+    query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url, meal_type FROM recipes WHERE "
     conditions = []
     params = []
     for ingredient in ingredients_list:
@@ -93,9 +105,14 @@ def query_with_extras(conn, ingredients_list,
     if max_fat is not None:
         conditions.append("fat <= ?")
         params.append(max_fat)
+    
+    if allergy:
+        allergies = allergy if isinstance(allergy, (list, tuple, set)) else [allergy]
+        for a in allergies:
+            conditions.append("LOWER(ingredients) NOT LIKE LOWER(?)")
+            params.append(f"%{a}%")
 
     query += " AND ".join(conditions)
-
 
     title_score_parts = []
     title_params = []
@@ -117,10 +134,3 @@ def query_with_extras(conn, ingredients_list,
     columns = [col[0] for col in cursor.description]
     results = [dict(zip(columns, row)) for row in rows]
     return results
-
-
-if __name__ == "__main__":
-    conn = sqlite3.connect("recipes.db")
-    user_query = input("Enter your ingredients seperated by spaces:\n")
-    ingredients_list = user_query.split()
-    print(query_with_extras(conn,ingredients_list))
