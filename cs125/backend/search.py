@@ -49,25 +49,6 @@ def connect_db():
     return conn
 
 APP_STATE = {}
-MEAL_TYPE_MAP = {
-    "breakfast": [
-        "breakfast"
-    ],
-
-    "lunch": [
-        "salad",
-        "soup",
-        "side dish",
-        "bread",
-        "appetizer"
-    ],
-
-    "dinner": [
-        "main course",
-        "soup",
-        "side dish"
-    ]
-}
 
 stored_query_info = {}  #stores query info...
 allergy = None
@@ -101,37 +82,62 @@ def save_info():
     #meal_type = "breakfast" #change later to be based on time!!!
     
     #stored_info["meals"] = api.get_meal(stored_info, meal_type)
+    global allergy
     try:
-        global allergy 
         allergy = stored_info["macros"].get("allergies")
     except:
         None
+
+    if allergy:
+        allergy = [a.strip().lower() for a in allergy.split(",") if a.strip()]
+    else:
+        allergy = None
 
     conn = connect_db()
     create_table(conn)
     ingred = [t.strip().lower() for t in stored_info["query"].split(",") if t.strip()]
     mealtype, calories = _get_calories_per_mealtime()
+    macros_check = stored_info["filters"].get("macros")
+    calories_check = stored_info["filters"].get("calories")
 
-    if(stored_info["filters"].get("macros")):
+    carbs = stored_info["macros"].get("carbs")
+    mincarbs = None
+    maxcarbs = None
+    fat = stored_info["macros"].get("fat")
+    minfat = None
+    maxfat = None
+    protein = stored_info["macros"].get("protein")
+    minpro = None
+    maxpro = None
+    if carbs:
+        mincarbs = carbs-10
+        maxcarbs = carbs+10
+    if fat:
+        minfat = fat-10
+        maxfat = fat+10
+    if protein:
+        minpro = protein-10
+        maxpro = protein+10
+
+    mincal = None
+    maxcal = None
+    if calories:
+        mincal = calories-100
+        maxcal = calories+100
+
+    if(calories_check and macros_check):
+        print("FILTER: CALORIES & MACROS")
+        stored_info["meals"] = rq.query_with_extras(conn, ingred, allergy=allergy,
+            min_calories=mincal,
+            max_calories=maxcal,
+            min_protein=minpro,
+            max_protein=maxpro,
+            min_carbs=mincarbs,
+            max_carbs=maxcarbs,
+            min_fat=minfat,
+            max_fat=maxfat, meal_type=mealtype)
+    elif(macros_check):
         print("FILTER: MACROS")
-        carbs = stored_info["macros"].get("carbs")
-        mincarbs = None
-        maxcarbs = None
-        fat = stored_info["macros"].get("fat")
-        minfat = None
-        maxfat = None
-        protein = stored_info["macros"].get("protein")
-        minpro = None
-        maxpro = None
-        if carbs:
-            mincarbs = carbs-10
-            maxcarbs = carbs+10
-        if fat:
-            minfat = fat-10
-            maxfat = fat+10
-        if protein:
-            minpro = protein-10
-            maxpro = protein+10
         stored_info["meals"] = rq.query_with_extras(conn, ingred, allergy=allergy,
             min_calories=None,
             max_calories=None,
@@ -140,19 +146,14 @@ def save_info():
             min_carbs=mincarbs,
             max_carbs=maxcarbs,
             min_fat=minfat,
-            max_fat=maxfat)
-    elif(stored_info["filters"].get("calories")):
+            max_fat=maxfat, meal_type=mealtype)
+    elif(calories_check):
         print("FILTER: CALORIES")
-        mincal = None
-        maxcal = None
-        if calories:
-            mincal = calories-10
-            maxcal = calories+10
         stored_info["meals"] = rq.query_with_extras(conn, ingred, allergy=allergy,
             min_calories=mincal,
-            max_calories=maxcal)
+            max_calories=maxcal, meal_type=mealtype)
     else:
-        stored_info["meals"] = rq.query_simple(conn, ingred, allergy)
+        stored_info["meals"] = rq.query_simple(conn, ingred, allergy, meal_type=mealtype)
         
     return jsonify({
         "status": "search updated",

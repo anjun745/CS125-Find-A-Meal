@@ -1,50 +1,51 @@
 import sqlite3
+MEAL_TYPE_MAP = {
+    "breakfast": [
+        "breakfast"
+    ],
 
-def query_simple(conn, ingredients_list, allergy=None): #grabs all recipes that include ALL the ingredients
+    "lunch": [
+        "salad",
+        "soup",
+        "side dish",
+        "bread",
+        "appetizer"
+    ],
+
+    "dinner": [
+        "main course",
+        "soup",
+        "side dish"
+    ]
+}
+
+def query_simple(conn, ingredients_list, allergy=None, meal_type=None): #grabs all recipes that include ALL the ingredients
     cursor = conn.cursor()
 
-    query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url FROM recipes WHERE "
+    query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url FROM recipes "
     conditions = []
     params = []
     for ingredient in ingredients_list:
-        conditions.append("ingredients LIKE ?")
+        conditions.append("LOWER(ingredients) LIKE LOWER(?)")
         params.append(f"%{ingredient}%")
 
-    query += " AND ".join(conditions)
+    # exclude allergies
     if allergy:
         allergies = allergy if isinstance(allergy, (list, tuple, set)) else [allergy]
         for a in allergies:
-            query += " AND LOWER(ingredients) NOT LIKE LOWER(?)"
+            conditions.append("LOWER(ingredients) NOT LIKE LOWER(?)")
             params.append(f"%{a}%")
-            
-    query += " ORDER BY like_count DESC"
 
-    cursor.execute(query, params)
-    rows = cursor.fetchall()
-
-    columns = [col[0] for col in cursor.description]
-    results = [dict(zip(columns, row)) for row in rows]
-    return results
-
-
-def query_simple_or(conn, ingredients_list, allergy=None): #grabs all recipes that include ANY the ingredients
-    cursor = conn.cursor()
-
-    query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url, meal_type FROM recipes WHERE "
-    conditions = []
-    params = []
-
-    for ingredient in ingredients_list:
-        conditions.append("ingredients LIKE ?")
-        params.append(f"%{ingredient}%")
-
-    query += " OR ".join(conditions)
-    if allergy:
-        allergies = allergy if isinstance(allergy, (list, tuple, set)) else [allergy]
-        for a in allergies:
-            query += " AND LOWER(ingredients) NOT LIKE LOWER(?)"
-            params.append(f"%{a}%")
-            
+    # filter meal type
+    if meal_type:
+        meal_types = MEAL_TYPE_MAP.get(meal_type.lower(), [])
+        if meal_types:
+            placeholders = ",".join(["?"] * len(meal_types))
+            conditions.append(f"LOWER(meal_type) IN ({placeholders})")
+            params.extend([m.lower() for m in meal_types])
+    
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
     query += " ORDER BY like_count DESC"
 
     cursor.execute(query, params)
@@ -62,15 +63,16 @@ def query_with_extras(conn, ingredients_list,
     min_carbs=None,
     max_carbs=None,
     min_fat=None,
-    max_fat=None, allergy=None): #grabs all recipes that include ALL the ingredients
+    max_fat=None, allergy=None, meal_type=None): #grabs all recipes that include ALL the ingredients
     cursor = conn.cursor()
     print("MIN AND MAX PROTEIN:", min_protein, max_protein)
     print("MIN AND MAX CALORIES:", min_calories, max_calories)
-    query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url, meal_type FROM recipes WHERE "
+    query = "SELECT id, ingredients, title, image_url, calories, ready_in_minutes, source_url, meal_type FROM recipes WHERE "
+    print("ALLERGY:", allergy)
     conditions = []
     params = []
     for ingredient in ingredients_list:
-        conditions.append("ingredients LIKE ? OR LOWER(title) LIKE LOWER(?)")
+        conditions.append("(LOWER(ingredients) LIKE LOWER(?) OR LOWER(title) LIKE LOWER(?))")
         params.append(f"%{ingredient}%")
         params.append(f"%{ingredient}%")
 
@@ -111,7 +113,13 @@ def query_with_extras(conn, ingredients_list,
         for a in allergies:
             conditions.append("LOWER(ingredients) NOT LIKE LOWER(?)")
             params.append(f"%{a}%")
+    if meal_type:
+        meal_types = MEAL_TYPE_MAP.get(meal_type.lower(), [])
 
+        if meal_types:
+            placeholders = ",".join(["?"] * len(meal_types))
+            conditions.append(f"LOWER(meal_type) IN ({placeholders})")
+            params.extend([m.lower() for m in meal_types])
     query += " AND ".join(conditions)
 
     title_score_parts = []
@@ -128,6 +136,33 @@ def query_with_extras(conn, ingredients_list,
     query += f" ORDER BY ({score_expression}) DESC"
 
     params.extend(title_params) #we need this cause otherwise we still have an extra unfilled ?
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+
+    columns = [col[0] for col in cursor.description]
+    results = [dict(zip(columns, row)) for row in rows]
+    return results
+
+def query_simple_or(conn, ingredients_list, allergy=None): #grabs all recipes that include ANY the ingredients
+    cursor = conn.cursor()
+
+    query = "SELECT id, title, image_url, calories, ready_in_minutes, source_url, meal_type FROM recipes WHERE "
+    conditions = []
+    params = []
+
+    for ingredient in ingredients_list:
+        conditions.append("ingredients LIKE ?")
+        params.append(f"%{ingredient}%")
+
+    query += " OR ".join(conditions)
+    if allergy:
+        allergies = allergy if isinstance(allergy, (list, tuple, set)) else [allergy]
+        for a in allergies:
+            query += " AND LOWER(ingredients) NOT LIKE LOWER(?)"
+            params.append(f"%{a}%")
+            
+    query += " ORDER BY like_count DESC"
+
     cursor.execute(query, params)
     rows = cursor.fetchall()
 
