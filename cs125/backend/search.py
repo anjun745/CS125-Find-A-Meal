@@ -5,7 +5,6 @@ from .routes.user_info import stored_info
 # from . import api_spoonacular as api
 from . import recipe_query as rq
 import sqlite3
-import os
 from pathlib import Path
 search_bp = Blueprint("search", __name__)
 def create_table(conn):
@@ -56,7 +55,10 @@ allergy = None
 def get_info():  #allows GET requests to /api/search
     return jsonify(stored_query_info)
 def _get_calories_per_mealtime():
-    cals = stored_info["user_calories_per_day"]
+    try:
+        cals = stored_info["user_calories_per_day"]
+    except:
+        cals = None
 
     now = datetime.datetime.now().hour
 
@@ -69,8 +71,10 @@ def _get_calories_per_mealtime():
     else:
         meal = "dinner"
         percentage = 0.40
-
-    calories_for_meal = int(cals * percentage)
+    try:
+        calories_for_meal = int(cals * percentage)
+    except:
+        calories_for_meal = None
 
     return meal, calories_for_meal
 
@@ -97,18 +101,29 @@ def save_info():
     create_table(conn)
     ingred = [t.strip().lower() for t in stored_info["query"].split(",") if t.strip()]
     mealtype, calories = _get_calories_per_mealtime()
-    macros_check = stored_info["filters"].get("macros")
-    calories_check = stored_info["filters"].get("calories")
-
-    carbs = stored_info["macros"].get("carbs")
-    mincarbs = None
-    maxcarbs = None
-    fat = stored_info["macros"].get("fat")
-    minfat = None
-    maxfat = None
-    protein = stored_info["macros"].get("protein")
-    minpro = None
-    maxpro = None
+    try:
+        macros_check = stored_info["filters"].get("macros")
+        calories_check = stored_info["filters"].get("calories")
+        
+        carbs = stored_info["macros"].get("carbs")
+        mincarbs = None
+        maxcarbs = None
+        fat = stored_info["macros"].get("fat")
+        minfat = None
+        maxfat = None
+        protein = stored_info["macros"].get("protein")
+        minpro = None
+        maxpro = None
+    except:
+        carbs = None
+        fat = None
+        protein = None
+        mincarbs = None
+        maxcarbs = None
+        minfat = None
+        maxfat = None
+        minpro = None
+        maxpro = None
     if carbs:
         mincarbs = carbs-10
         maxcarbs = carbs+10

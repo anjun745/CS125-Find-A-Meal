@@ -169,3 +169,46 @@ def query_simple_or(conn, ingredients_list, allergy=None): #grabs all recipes th
     columns = [col[0] for col in cursor.description]
     results = [dict(zip(columns, row)) for row in rows]
     return results
+
+def recommendations(conn, allergy=None, meal_type=None, min_calories=None, max_calories=None, limit=20):
+    sql = """
+    SELECT id, title, image_url, calories, ready_in_minutes, source_url, meal_type
+    FROM recipes
+    WHERE 1=1
+    """
+    params = []
+
+    if meal_type:
+        mapped = MEAL_TYPE_MAP.get(meal_type.lower(), [meal_type.lower()])
+
+        like_clauses = []
+        for mt in mapped:
+            like_clauses.append("LOWER(meal_type) LIKE ?")
+            params.append(f"%{mt.lower()}%")
+
+        sql += " AND (" + " OR ".join(like_clauses) + ")"
+
+    if min_calories is not None:
+        sql += " AND calories >= ?"
+        params.append(min_calories)
+
+    if max_calories is not None:
+        sql += " AND calories <= ?"
+        params.append(max_calories)
+
+    if allergy:
+        allergies = allergy if isinstance(allergy, (list, tuple, set)) else [allergy]
+        for a in allergies:
+            sql += " AND LOWER(ingredients) NOT LIKE LOWER(?)"
+            params.append(f"%{a}%")
+
+    sql += " ORDER BY RANDOM()"
+    sql += " LIMIT ?"
+    params.append(limit)
+
+    cur = conn.cursor()
+    cur.execute(sql, params)
+    rows = cur.fetchall()
+
+    columns = [col[0] for col in cur.description]
+    return [dict(zip(columns, row)) for row in rows]
