@@ -81,8 +81,5 @@ export default function Search(){
         </div>
         </form>
 
-
-
-
     );
 }
