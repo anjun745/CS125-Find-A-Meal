@@ -42,10 +42,8 @@ export default function PersonalInfo(){
         body: JSON.stringify({gender, fitness, activity, 
         macros:{
             protein: protein === "" ? null : parseInt(protein),
-            carbs: carbs === "" ? null : parseInt(carbs),
             fat: fat === "" ? null : parseInt(fat),
             fiber: fiber === "" ? null : parseInt(fiber),
-            sugarLimit: sugarLimit === "" ? null : parseInt(sugarLimit),
             allergies
         },
             height: height === "" ? null : parseInt(height),
@@ -153,14 +151,6 @@ export default function PersonalInfo(){
                     onChange={(e) => setMacros({ ...macros, protein: e.target.value })}
                     />
                 </label>
-                <label>
-                    Carbs (g/day)
-                    <input
-                    type="number"
-                    value={macros.carbs}
-                    onChange={(e) => setMacros({ ...macros, carbs: e.target.value })}
-                    />
-                </label>
             </div>
 
             <div>
@@ -182,15 +172,6 @@ export default function PersonalInfo(){
                     />
                 </label>
             </div>
-
-            <label>
-                Sugar limit (g/day)
-                <input
-                type="number"
-                value={macros.sugarLimit}
-                onChange={(e) => setMacros({ ...macros, sugarLimit: e.target.value })}
-                />
-            </label>
 
             <label>
                 Allergies (comma-separated)

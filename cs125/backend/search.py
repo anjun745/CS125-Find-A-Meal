@@ -29,8 +29,7 @@ def create_table(conn):
         very_healthy BOOL,
         like_count INT,
         spoonacular_score REAL,
-        meal_type TEXT
-                
+        meal_type TEXT        
     )
     """)
     conn.commit()
@@ -105,40 +104,51 @@ def save_info():
         macros_check = stored_info["filters"].get("macros")
         calories_check = stored_info["filters"].get("calories")
         
-        carbs = stored_info["macros"].get("carbs")
-        mincarbs = None
-        maxcarbs = None
+        fiber = stored_info["macros"].get("fiber")
+        minfiber = None
+        maxfiber = None
+
         fat = stored_info["macros"].get("fat")
         minfat = None
         maxfat = None
+
         protein = stored_info["macros"].get("protein")
         minpro = None
         maxpro = None
     except:
-        carbs = None
+        fiber = None
         fat = None
         protein = None
-        mincarbs = None
-        maxcarbs = None
+        minfiber = None
+        maxfiber = None
         minfat = None
         maxfat = None
         minpro = None
         maxpro = None
-    if carbs:
-        mincarbs = carbs-10
-        maxcarbs = carbs+10
+
+    minfiber = None
+    maxfiber = None
+    if fiber:
+        minfiber = fiber-50
+        maxfiber = fiber+50
+    
+    minfat = None
+    maxfat = None
     if fat:
-        minfat = fat-10
-        maxfat = fat+10
+        minfat = fat-50
+        maxfat = fat+50
+
+    minpro = None
+    maxpro = None
     if protein:
-        minpro = protein-10
-        maxpro = protein+10
+        minpro = protein-50
+        maxpro = protein+50
 
     mincal = None
     maxcal = None
     if calories:
-        mincal = calories-100
-        maxcal = calories+100
+        mincal = calories-200
+        maxcal = calories+200
 
     if(calories_check and macros_check):
         print("FILTER: CALORIES & MACROS")
@@ -147,19 +157,17 @@ def save_info():
             max_calories=maxcal,
             min_protein=minpro,
             max_protein=maxpro,
-            min_carbs=mincarbs,
-            max_carbs=maxcarbs,
+            min_fiber=minfiber,
+            max_fiber=maxfiber,
             min_fat=minfat,
             max_fat=maxfat, meal_type=mealtype)
     elif(macros_check):
         print("FILTER: MACROS")
         stored_info["meals"] = rq.query_with_extras(conn, ingred, allergy=allergy,
-            min_calories=None,
-            max_calories=None,
             min_protein=minpro,
             max_protein=maxpro,
-            min_carbs=mincarbs,
-            max_carbs=maxcarbs,
+            min_fiber=minfiber,
+            max_fiber=maxfiber,
             min_fat=minfat,
             max_fat=maxfat, meal_type=mealtype)
     elif(calories_check):

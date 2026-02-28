@@ -60,8 +60,8 @@ def query_with_extras(conn, ingredients_list,
     max_calories=None,
     min_protein=None,
     max_protein=None,
-    min_carbs=None,
-    max_carbs=None,
+    min_fiber=None,
+    max_fiber=None,
     min_fat=None,
     max_fat=None, allergy=None, meal_type=None): #grabs all recipes that include ALL the ingredients
     cursor = conn.cursor()
@@ -92,13 +92,13 @@ def query_with_extras(conn, ingredients_list,
         conditions.append("protein <= ?")
         params.append(max_protein)
 
-    if min_carbs is not None:
-        conditions.append("carbs >= ?")
-        params.append(min_carbs)
+    if min_fiber is not None:
+        conditions.append("fiber >= ?")
+        params.append(min_fiber)
 
-    if max_carbs is not None:
-        conditions.append("carbs <= ?")
-        params.append(max_carbs)
+    if max_fiber is not None:
+        conditions.append("fiber <= ?")
+        params.append(max_fiber)
 
     if min_fat is not None:
         conditions.append("fat >= ?")
