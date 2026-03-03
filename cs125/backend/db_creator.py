@@ -4,10 +4,7 @@ import requests
 #MEAL_TYPES = ["breakfast","main course","vegetarian","vegan","pescatarian"]
 MEAL_TYPES = ["main course"]
 
-kei_key = "402cf8980ef54e318fba1bd772fd3dde"
-leah_key = "41b38bcafc974c06937752cda574f500"
-alvin_key = "6d081c60d7aa4cd8b2ad2e3c810ef703"
-alvin_key2 = "5e1b1107f24d4d1cbc92bb5e681813ab"
+alvin_key2 = ""
 API_KEY = alvin_key2.strip() #use ur own when you can
 API_URL = "https://api.spoonacular.com/recipes/complexSearch"
 

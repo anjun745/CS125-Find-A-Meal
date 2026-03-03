@@ -1,8 +1,7 @@
 from flask import Flask,jsonify
 import requests
 
-#alvins api key: 6d081c60d7aa4cd8b2ad2e3c810ef703
-API_KEY = "5e1b1107f24d4d1cbc92bb5e681813ab".strip() #use ur own when you can
+API_KEY = "".strip() #use ur own when you can
 API_URL = "https://api.spoonacular.com/recipes/complexSearch"
 app = Flask(__name__)
 
